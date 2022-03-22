@@ -1,7 +1,7 @@
 const express = require('express')
 const { google } = require("googleapis");
 
-const port = 4000
+const port = 80
 const app = express()
 
 const cors = require('cors')
@@ -48,6 +48,28 @@ app.get('/drivelist', async function (req, res) {
     res.send(metaData.data)
 })
 
+app.get('/getAllFilesFromFolder/:id', async function (req, res) {
+
+    const fileId = req.params.id
+    console.log(fileId)
+
+    // Create client instance for auth
+    const client = await auth.getClient();
+
+    // Instance of Google Drive API
+    const googleDrive = google.drive({ version: "v3", auth: client })
+
+    // Get metadata about spreadsheet
+    const metaData = await googleDrive.files.list({
+        auth,
+        fileId,
+        q: `'${fileId}' in parents`
+    })
+
+    res.send(metaData.data.files)
+
+})
+
 app.get('/getFile/:id', async function (req, res) {
 
     const documentId = req.params.id
@@ -65,28 +87,6 @@ app.get('/getFile/:id', async function (req, res) {
     })
 
     res.send(metaData.data)
-})
-
-app.get('/testFile/:id', async function (req, res) {
-
-    const documentId = req.params.id
-
-    // Create client instance for auth
-    const client = await auth.getClient();
-
-    // Instance of Google Docs API
-    const googleDocs = google.docs({ version: "v1", auth: client })
-
-    // Get metadata about spreadsheet
-    const metaData = await googleDocs.documents.get({
-        auth,
-        documentId
-    })
-
-    const getPageData = metaData.data.body.content
-
-    res.send(getPageData)
-
 })
 
 app.listen(port, (req, res) => console.log(`Server running on port ${port}`))
