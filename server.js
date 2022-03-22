@@ -1,7 +1,9 @@
+require('dotenv').config()
+
 const express = require('express')
 const { google } = require("googleapis");
 
-const port = 4000
+const port = process.env.PORT
 const app = express()
 
 const cors = require('cors')
@@ -49,7 +51,6 @@ app.get('/drivelist', async function (req, res) {
 app.get('/getAllFilesFromFolder/:id', async function (req, res) {
 
     const fileId = req.params.id
-    console.log(fileId)
 
     // Create client instance for auth
     const client = await auth.getClient();

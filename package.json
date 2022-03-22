@@ -12,6 +12,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "delay-map": "^1.0.1",
+    "dotenv": "^16.0.0",
     "express": "^4.17.3",
     "googleapis": "^97.0.0"
   },
