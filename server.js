@@ -1,12 +1,10 @@
 const express = require('express')
 const { google } = require("googleapis");
 
-const port = 80
+const port = 4000
 const app = express()
 
 const cors = require('cors')
-
-const webContentFolder = "1NdyvY6y4d3uGQjdgZXFobkOD8O48q3R_"
 
 const auth = new google.auth.GoogleAuth({
     keyFile: "credentials.json",
