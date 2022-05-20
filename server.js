@@ -17,20 +17,12 @@ const auth = new google.auth.GoogleAuth({
     ],
 });
 
-function range(start, end) {
-    return Array(end - start + 1).fill().map((_, idx) => start + idx)
-  }
+// Create client instance for auth
+const client = async () => await auth.getClient();
 
 app.use(cors())
 
-app.get('/', async function (req, res) {
-    res.send('Index')
-})
-
 app.get('/drivelist', async function (req, res) {
-
-    // Create client instance for auth
-    const client = await auth.getClient();
 
     // Instance of Google Drive API
     const googleDrive = google.drive({ version: "v3", auth: client })
@@ -52,9 +44,6 @@ app.get('/getAllFilesFromFolder/:id', async function (req, res) {
 
     const fileId = req.params.id
 
-    // Create client instance for auth
-    const client = await auth.getClient();
-
     // Instance of Google Drive API
     const googleDrive = google.drive({ version: "v3", auth: client })
 
@@ -73,9 +62,6 @@ app.get('/getFile/:id', async function (req, res) {
 
     const documentId = req.params.id
 
-    // Create client instance for auth
-    const client = await auth.getClient();
-
     // Instance of Google Docs API
     const googleDocs = google.docs({ version: "v1", auth: client })
 
@@ -87,5 +73,13 @@ app.get('/getFile/:id', async function (req, res) {
 
     res.send(metaData.data)
 })
+
+app.get('/', async function (req, res) {
+    res.send('NWK API - Read Documentation...')
+})
+
+app.get('*', function(req, res) {
+    res.send('')
+});
 
 app.listen(port, (req, res) => console.log(`Server running on port ${port}`))
