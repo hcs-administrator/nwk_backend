@@ -6,7 +6,8 @@ const { google } = require("googleapis");
 const port = process.env.PORT
 const app = express()
 
-const cors = require('cors')
+const cors = require('cors');
+const { all } = require('express/lib/application');
 
 const auth = new google.auth.GoogleAuth({
     keyFile: "credentials.json",
@@ -22,22 +23,22 @@ const client = async () => await auth.getClient();
 
 app.use(cors())
 
-app.get('/drivelist', async function (req, res) {
+app.get('/drivelist/:id', async function (req, res) {
 
-    // Instance of Google Drive API
-    const googleDrive = google.drive({ version: "v3", auth: client })
+    let dataSet = []
 
-    // Get metadata about spreadsheet
-    const metaData = await googleDrive.files.list({
-        auth,
-        includeItemsFromAllDrives: false,
-        supportsAllDrives: true,
-        corpora: "user",
-        fields: 'files(id,name, mimeType)', //,size,mimeType,parents
-        q: "'1NdyvY6y4d3uGQjdgZXFobkOD8O48q3R_' in parents and name != '__Pages' and mimeType = 'application/vnd.google-apps.folder'"
-    })
+    let folder = req.params.id
 
-    res.send(metaData.data)
+    if (req.params.id === undefined) {
+        folder = "11pBICyGBEBABnnlwmbCc9I2WS0zIPjHB"
+    }
+
+    if (dataSet.length === 0) {
+        const getTopLevelFolderId = await getTopLevelFolder(folder)
+        dataSet.push(await getTopLevelFolderId.data)
+    }
+
+    res.send(dataSet[0])
 })
 
 app.get('/getAllFilesFromFolder/:id', async function (req, res) {
@@ -83,3 +84,24 @@ app.get('*', function(req, res) {
 });
 
 app.listen(port, (req, res) => console.log(`Server running on port ${port}`))
+
+// FUNCTIONS
+
+const getTopLevelFolder = async (folder) => {
+
+    console.log(folder)
+
+    // Instance of Google Drive API
+    const googleDrive = google.drive({ version: "v3", auth: client })
+
+    // Get metadata about spreadsheet
+    return getTopLevelFolderId = await googleDrive.files.list({
+        auth,
+        includeItemsFromAllDrives: false,
+        supportsAllDrives: true,
+        corpora: "user",
+        fields: 'files(id, name)', //,size,mimeType,parents
+        q: `'${folder}' in parents and name != '__Pages' and mimeType = 'application/vnd.google-apps.folder'`
+    })
+
+}
